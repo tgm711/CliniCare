@@ -22,12 +22,17 @@ def db_entry():
         tkinter.messagebox.showerror("Error", "Name should not contain numbers!")
         return
     if e3.get() != "":
-        p3 = int(e3.get())
-        if not re.match(r'[0-9]', e3.get()) or p3 > 100 or p3 < 0:  
-            tkinter.messagebox.showerror("Error", "Invalid Age!")
+        age = e3.get()
+        if not age.isdigit():
+            tkinter.messagebox.showerror("Error", "Age must be a number!")
             return
+        else:
+            p3 = int(age)
+            if p3 > 100 or p3 < 0:
+                tkinter.messagebox.showerror("Error", "Invalid Age!")
+                return
     else:
-        p3 = int("0")
+        p3 = 0 
     p4 = bgselvar.get()
     p5 = e5.get()
     if not re.match(r'\d{10}', p5):  
