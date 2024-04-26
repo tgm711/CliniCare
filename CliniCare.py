@@ -434,6 +434,7 @@ def view_apt():
                 
     if records:
         try:
+            root4.destroy()
             root5 = Tk()
             root5.title("View Appointments")
             root5.geometry(f"842x500+{330}+{150}")
@@ -581,6 +582,7 @@ def apt_details():
 def update_prescription():
     global root14, x1, x2, x3, u, x4, x5
     print(u)
+    root11.destroy()
     root14 = Tk()
     root14.title("Add Prescription")
     root14.geometry(f"300x400+{600}+{200}")
@@ -671,6 +673,7 @@ def view_prescription():
                 
     if records:
         try:
+            root11.destroy()
             root12 = Tk()
             root12.title("View Data")
             root12.geometry(f"1050x500+{330}+{150}")
