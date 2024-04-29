@@ -18,7 +18,7 @@ def db_entry():
     global uid, bgselvar, root1
     p1 = uid
     p2 = e2.get()
-    if not re.match(r'([A-Z][a-z])*',p2):
+     if not re.match(r'([A-Z][a-z])*',p2):
         tkinter.messagebox.showerror("Error", "Name should not contain numbers!")
         return
     if e3.get() != "":
@@ -520,25 +520,21 @@ def bk_apt():
            l3=Label(root2,text=i,font="Arial 10 bold", justify = "center", bg = "light blue")
            l3.place(x=25,y=c)
         L9=Label(root2,text=('Select Choice of Service'), font='arial 10 bold', bg='light blue').place(x=25,y=360) 
-        srv = ["","General Health Check-up","Child Care Center","Female Care Center","Prenatal Care Center", "Blood Pressure Monitoring","Nebulizer Treatment","Vaccination Center","Pathology"] 
+        srv = ["General Health Check-up","Child Care Center","Female Care Center","Prenatal Care Center", "Blood Pressure Monitoring","Nebulizer Treatment","Vaccination Center","Pathology"] 
         s = StringVar() 
         srv = ttk.Combobox(root2, width=32, textvariable=s, values=srv,state="readonly")
-        srv.place(x=200, y=360) 
-        srv.current(0)
+        srv.place(x=200, y=360)
         
-        #x5=tkinter.Entry(root2,width = 35)
-        #x5.place(x=200,y=360)
         L7=Label(root2,text=('Select Date'), font='arial 10 bold', bg='light blue').place(x=25,y=390)
         x3 = DateEntry(root2, date_pattern = "yyyy-mm-dd", width = 32)
         x3.place(x = 200, y = 390)
 
         L8=Label(root2,text=('Select Time (24 Hr Format)'), font='arial 10 bold', bg='light blue').place(x=25,y=420)
 
-        tm = ["","10:00", "10:30", "11:00", "11:30", "12:00",  "12:30", "13:00","16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00"] 
+        tm = ["10:00", "10:30", "11:00", "11:30", "12:00",  "12:30", "13:00","16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00"] 
         t = StringVar() 
         tm = ttk.Combobox(root2, width=32, textvariable=t, values=tm, state="readonly")
-        tm.place(x=200, y=420) 
-        tm.current(0)
+        tm.place(x=200, y=420)
         
     else:
         tkinter.messagebox.showerror("Error", "User doesnot exist!")
