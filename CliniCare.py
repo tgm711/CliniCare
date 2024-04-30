@@ -18,7 +18,7 @@ def db_entry():
     global uid, bgselvar, root1
     p1 = uid
     p2 = e2.get()
-     if not re.match(r'([A-Z][a-z])*',p2):
+    if re.match(r'([A-Z][0-9][a-z])*',p2) or not re.match(r'([A-Z][a-z])*',p2):
         tkinter.messagebox.showerror("Error", "Name should not contain numbers!")
         return
     if e3.get() != "":
@@ -297,10 +297,13 @@ def modify():
     print(choice)
     if new != "" :
         if choice=='Name':
-            cur.execute('update UserDetails set Name=%s where UserID=%s',(new,ad))
-            con.commit()
-            tkinter.messagebox.showinfo("Success", "Your Data has been Modified Successfully!")
-        elif choice=='Age':
+            if re.match(r'([A-Z][a-z])*',new):
+                cur.execute('update UserDetails set Name=%s where UserID=%s',(new,ad))
+                con.commit()
+                tkinter.messagebox.showinfo("Success", "Your Data has been Modified Successfully!")
+            else:
+                tkinter.messagebox.showerror("Error", "Invalid Name!, First Name must contain alphabets only.")
+        elif choice=='Age' and new.isdigit():
             if int(new) >= 0 and int(new) <= 100:
                 cur.execute('update UserDetails set Age=%s where UserID = %s',(new,ad))
                 con.commit()
