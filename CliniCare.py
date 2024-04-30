@@ -18,7 +18,7 @@ def db_entry():
     global uid, bgselvar, root1
     p1 = uid
     p2 = e2.get()
-    if re.match(r'([A-Z][0-9][a-z])*',p2) or not re.match(r'([A-Z][a-z])*',p2):
+    if not re.match(r'^[A-Za-z]+$',p2):
         tkinter.messagebox.showerror("Error", "Name should not contain numbers!")
         return
     if e3.get() != "":
