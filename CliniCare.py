@@ -238,15 +238,10 @@ def modifyForm2():
     x2=Label(root9,text='Enter Choice',font="arial 10 bold",bg ='light blue')
     x2.place(x=50,y=330)
 
-    det = ["","Name","Age","Gender","Phone No", "Blood Group"] 
+    det = ["Name","Age","Gender","Phone No", "Blood Group"] 
     d = StringVar() 
     dtch = ttk.Combobox(root9, width=32, textvariable=d, values=det)
     dtch.place(x=200, y=330) 
-    dtch.current(0)
-
-    '''x4=tkinter.Entry(root9)
-    choice=x4.get()
-    x4.place(x=200,y=330)'''
 
     L1=Label(root9,text='Old Details',font='arial 15 bold',bg ='light blue')
     L1.place(x=50,y=50)
