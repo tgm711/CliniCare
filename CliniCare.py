@@ -240,7 +240,7 @@ def modifyForm2():
 
     det = ["Name","Age","Gender","Phone No", "Blood Group"] 
     d = StringVar() 
-    dtch = ttk.Combobox(root9, width=32, textvariable=d, values=det)
+    dtch = ttk.Combobox(root9, width=32, textvariable=d, values=det, state='readonly')
     dtch.place(x=200, y=330) 
 
     L1=Label(root9,text='Old Details',font='arial 15 bold',bg ='light blue')
