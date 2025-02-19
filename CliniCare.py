@@ -1,4 +1,4 @@
-from tkinter import *
+from tkinter import *  
 import re
 from tkinter import ttk
 import tkinter.messagebox
@@ -197,8 +197,15 @@ def modifyForm1():
     frame.pack()
     l1=Label(root3,text="User-ID", font="arial 12 bold", bg = "light blue")
     l1.place(x=50,y=80)
-    x3=tkinter.Entry(root3, width=30)
-    x3.place(x=150,y=80)
+    cur.execute("select UserID from UserDetails order by UserID")
+    us = cur.fetchall()
+    print(us)
+    if us:
+        usd = StringVar() 
+        x3 = ttk.Combobox(frame, width = 30, textvariable = usd, values = us, state="readonly")
+        x3.place(x=150, y=38) 
+    '''x3=tkinter.Entry(root3, width=30)
+    x3.place(x=150,y=80)'''
     ad=x3.get()
     b1=Button(root3,text='Submit',font='arial 10 bold',bg = "white", fg = "black", width=15,command = modifyForm2)
     b1.place(x=140,y=150)
@@ -330,30 +337,15 @@ def modify():
                 tkinter.messagebox.showerror("Error", "Invalid Phone Numbers! Enter Numbers only.")
 
         elif choice=='Blood Group':
-            if new == 'A+' or new == 'A-' or new == 'B+' or new == 'B-' or new == 'O+' or new == 'O-' or new == 'AB+' or new == 'AB-' :
-                if new == 'a+' :
-                    new = 'A+'
-                elif new == 'a-' :
-                    new = 'A-'
-                elif new == 'b+' :
-                    new = 'B+'
-                elif new == 'b-' :
-                    new = 'B-'
-                elif new == 'ab+' or new == 'Ab+' or new == 'aB+':
-                    new = 'AB+'
-                elif new == 'ab-' or new == 'Ab-' or new == 'aB-':
-                    new = 'AB-'
-                elif new == 'o+' :
-                    new = 'O+'
-                elif new == 'o-' :
-                    new = 'O-'
-                cur.execute('update UserDetails set BloodGroup=%s where UserID=%s',(new,ad))
-                con.commit()
-                tkinter.messagebox.showinfo("Success", "Your Data has been Modified Successfully!")
+            if new.lower() in ['a+', 'a-', 'b+', 'b-', 'o-', 'o+', 'ab+', 'ab-']:
+                    newbg = new.upper()
+                    cur.execute('update UserDetails set BloodGroup=%s where UserID=%s',(newbg,ad))
+                    con.commit()
+                    tkinter.messagebox.showinfo("Success", "Your Data has been Modified Successfully!")
             else:
                  tkinter.messagebox.showerror("Error", "Invalid Blood Group!")
-        else:
-            pass
+        '''else:
+            pass'''
     else:
          tkinter.messagebox.showerror("Error", "New Data not Entered!")
     
@@ -373,8 +365,15 @@ def apt():
     frame.pack()
     l1=Label(root10,text="UserID", font='arial 10 bold', bg = 'light blue')
     l1.place(x=30,y=80)
-    x1=tkinter.Entry(root10, width = 30)
-    x1.place(x=100,y=80)
+    cur.execute("select UserID from UserDetails")
+    us = cur.fetchall()
+    print(us)
+    if us:
+        usd = StringVar() 
+        x1 = ttk.Combobox(frame, width = 25, textvariable = usd, values = us, state="readonly")
+        x1.place(x=100, y=38) 
+    '''x1=tkinter.Entry(root10, width = 30)
+    x1.place(x=100,y=80)'''
     b1=Button(root10,text='Submit',font='arial 10 bold', bg='white',command=checkuidapt)
     b1.place(x=120,y=130)
     root10.resizable(False,False)
@@ -384,14 +383,14 @@ def checkuidapt():
     global u
     u = x1.get()
     if u and u != "":
-        cur.execute("select UserID FROM UserDetails where UserID = %s",(u,))
+        cur.execute("select UserID from UserDetails where UserID = %s",(u,))
         records = cur.fetchall()
         uid = records
         print(uid)
         if records:
             aptop()
         else:
-            tkinter.messagebox.showerror("Error", "UserID does not exist!")
+            tkinter.messagebox.showerror("Error", "User does not exist!")
             if tkinter.messagebox.askokcancel("New Registration", "Would you like to register new user ?"):
                 register()
     else:
@@ -475,7 +474,7 @@ def view_apt():
         tkinter.messagebox.showinfo("View Data", "No records found in the database.")
    
 def bk_apt():
-    global x1,x2,x3,x4,x5,root10, root2,srv,p1,tm
+    global x1,x2,x3,x4,x5,root10,root2,srv,p1,tm
     p1=x1.get()
     print(p1)
     cur.execute('select * from UserDetails where UserID=%s',(p1,))
@@ -573,8 +572,8 @@ def apt_details():
         tkinter.messagebox.showerror("Error", "Invalid Details!")
         
 # Function to update prescription in MySQL
-def update_prescription():
-    global root14, x1, x2, x3, u, x4, x5
+def add_prescription():
+    global root14, x1, x2, x3, u, x4, x5, psid
     print(u)
     root11.destroy()
     root14 = Tk()
@@ -588,6 +587,8 @@ def update_prescription():
     label.pack()
     frame = Frame(root14, height=400, width=300, bg='light blue')
     frame.pack()
+
+    psid = ''.join(random.choices('abcdefghijklmnopqrstuvwxyz0123456789', k=5))
 
     l3 = Label(root14, text="Date", font='arial 10 bold', bg='light blue')
     l3.place(x=30, y=55)
@@ -609,17 +610,17 @@ def update_prescription():
     x2 = Text(root14, height=4, width=33, font='arial 10')
     x2.place(x=30, y=270)
     
-    b1 = Button(root14, text="Submit", font='arial 10 bold', command=add_prescription)
+    b1 = Button(root14, text="Submit", font='arial 10 bold', command=insert_prescription)
     b1.place(x=120, y=350)
 
     root14.resizable(False, False)
     root14.mainloop()
     
-def add_prescription():
-    global x1, x2, x3, u, x4, x5
-    print(u)
-    if u and u != "":
-        #u = x1.get()
+def insert_prescription():
+    global x1, x2, x3, u, x4, x5, psid
+    print(psid)
+    if psid:
+        pid = psid.get()
         p = x2.get("1.0", "end")
         c = x3.get("1.0", "end")
         d = x4.get()
@@ -670,7 +671,7 @@ def view_prescription():
             root11.destroy()
             root12 = Tk()
             root12.title("View Data")
-            root12.geometry(f"1050x500+{330}+{150}")
+            root12.geometry(f"1050x550+{330}+{150}")
             root12.config(bg = "light blue")
 
             windows.append(root12)
@@ -682,37 +683,200 @@ def view_prescription():
             label = Label(f3, text = "Prescription", font = 'arial 25 bold',bg='light blue')
             label.pack()
             
-            tree = Treeview(f3, columns = (1,2,3,4,5), height = 21, show = "headings")
+            tree = Treeview(f3, columns = (1,2,3,4,5,6), height = 21, show = "headings")
 
-            tree.column(1, anchor = CENTER, width = 150)
-            tree.column(2, anchor = CENTER, width = 150)
-            tree.column(3, anchor = CENTER, width = 200)
-            tree.column(4, anchor = CENTER, width = 400)
-            tree.column(5, anchor = CENTER, width = 100)
+            tree.column(1, anchor = CENTER, width = 100)
+            tree.column(2, anchor = CENTER, width = 100)
+            tree.column(3, anchor = CENTER, width = 100)
+            tree.column(4, anchor = CENTER, width = 200)
+            tree.column(5, anchor = CENTER, width = 400)
+            tree.column(6, anchor = CENTER, width = 90)
 
-            tree.heading(1, text = 'Date')
-            tree.heading(2, text = 'No. of Visit')
-            tree.heading(3, text = 'Medical Condition')
-            tree.heading(4, text = 'Prescription')
-            tree.heading(5, text = 'Fees (Rs.)')
+            tree.heading(1, text = 'PrescriptionID')
+            tree.heading(2, text = 'Date')
+            tree.heading(3, text = 'No. of Visit')
+            tree.heading(4, text = 'Medical Condition')
+            tree.heading(5, text = 'Prescription')
+            tree.heading(6, text = 'Fees (Rs.)')
                 
             for record in records:
                 p = record[4].strip()
-                tree.insert("", "end", values=(record[1], record[2], record[3], p, record[5]))
+                tree.insert("", "end", values=(record[6], record[1], record[2], record[3], p, record[5]))
     
             tree.place(x = 0, y = 150)
             tree.pack()
+            
+            bt = Button(root12, text="View All", font='arial 10 bold', command=view_all_prescription)
+            bt.place(x=500,y=505)
 
             root12.resizable(False, False)
             root12.mainloop()
-
             
         except Exception as e:
             print(e)
             tkinter.messagebox.showerror("Error", "Failed to fetch records from the database.")
     else:
         tkinter.messagebox.showinfo("View Data", "No records found in the database.")
+
+def view_all_prescription():
+    global root16, root12
+    UserID = x1.get()
+    cur.execute("select * from Prescriptions order by Date desc")
+    print(cur.statement)
+    records = cur.fetchall()
+    print(records)
+                
+    if records:
+        try:
+            root12.destroy()
+            root16 = Tk()
+            root16.title("View Prescriptions")
+            root16.geometry(f"1050x500+{330}+{150}")
+            root16.config(bg = "light blue")
+
+            windows.append(root16)
+                
+            f = Frame(root16, height = 500, width = 1050,bg='light blue')
+            f.propagate()
+            f.pack()
+            
+            label = Label(f, text = "Prescription", font = 'arial 25 bold',bg='light blue')
+            label.pack()
+            
+            tree = Treeview(f, columns = (1,2,3,4,5,6), height = 21, show = "headings")
+
+            tree.column(1, anchor = CENTER, width = 100)
+            tree.column(2, anchor = CENTER, width = 100)
+            tree.column(3, anchor = CENTER, width = 100)
+            tree.column(4, anchor = CENTER, width = 200)
+            tree.column(5, anchor = CENTER, width = 400)
+            tree.column(6, anchor = CENTER, width = 90)
+
+            tree.heading(1, text = 'PrescriptionID')
+            tree.heading(2, text = 'Date')
+            tree.heading(3, text = 'No. of Visit')
+            tree.heading(4, text = 'Medical Condition')
+            tree.heading(5, text = 'Prescription')
+            tree.heading(6, text = 'Fees (Rs.)')
+                
+            for record in records:
+                p = record[4].strip()
+                tree.insert("", "end", values=(record[6], record[1], record[2], record[3], p, record[5]))
+    
+            tree.place(x = 0, y = 150)
+            tree.pack()
+
+            root16.resizable(False, False)
+            root16.mainloop()
+            
+        except Exception as e:
+            print(e)
+            tkinter.messagebox.showerror("Error", "Failed to fetch records from the database.")
+    else:
+        tkinter.messagebox.showinfo("View Data", "No records found in the database.")
+
+def modify_prspt_Form():
+    global pi,choice,new,root15,us,dtch,x1,x16,us,nd
+    
+    root15=Tk()
+    root15.title("Modification Form")
+    root15.geometry(f"500x480+{500}+{200}")
+    root15.config(background="light blue")
+
+    windows.append(root15)
+    
+    us = x1.get()
+    cur.execute("select * from UserDetails where UserID = %s",(us,))
+    dat=cur.fetchall()
+    frame=Frame(root15,height=480,width=500,bg='light blue')
+    frame.pack()
+    l1=Label(root15,text='Data Modification',font="arial 20 bold",bg ='light blue')
+    l1.place(x=150,y=10)
+    
+    l2=Label(root15,text='What do you want to modify ?',font="arial 15 bold",bg ='light blue')
+    l2.place(x=45,y=50)
+    l3=Label(root15,text='1. Date',font="arial 10 bold",bg ='light blue')
+    l3.place(x=50,y=80)
+    l5=Label(root15,text='2. Medical Condition',font="arial 10 bold",bg ='light blue')
+    l5.place(x=50,y=100)
+    l6=Label(root15,text='3. Prescription',font="arial 10 bold",bg ='light blue')
+    l6.place(x=50,y=120)
+    l6=Label(root15,text='4. Fees Paid',font="arial 10 bold",bg ='light blue')
+    l6.place(x=50,y=140)
         
+    a=[]
+    if dat:
+        for i in dat:
+            a.append(i)   
+        if len(a)==0:
+            tkinter.messagebox.showwarning("Error", "No Data Found!!")
+            
+    x2=Label(root15,text='Enter Choice',font="arial 10 bold",bg ='light blue')
+    x2.place(x=50,y=250)
+
+    det = ["Medical Condition","Prescription", "Fees Paid"] 
+    d = StringVar() 
+    dtch = ttk.Combobox(root15, width=32, textvariable=d, values=det, state='readonly')
+    dtch.place(x=200, y=250)
+
+    x3=Label(root15,text='Enter PrescriptionID',font="arial 10 bold",bg ='light blue')
+    x3.place(x=50,y=280)
+    
+    cur.execute("select PrescriptionID from Prescriptions where UserID = %s", (us, ))
+    pid = cur.fetchall()
+    print(pid)
+    if pid:
+        prs = StringVar() 
+        pi = ttk.Combobox(root15, width = 32, textvariable = prs, values = pid, state="readonly")
+        pi.place(x=200, y=280) 
+    
+    x4=Label(root15,text='Enter New Details',font='arial 10 bold',bg ='light blue')
+    x4.place(x=50,y=310)
+    nd=tkinter.Entry(root15,width=35)
+    nd.place(x=200,y=310)
+    
+    b=Button(root15,text='Submit',font='arial 10 bold',bg='white',command=modify_prspt)
+    b.place(x=220,y=420)
+    
+    root15.resizable(False,False)
+    root15.mainloop()
+
+def modify_prspt():
+    global us,nd,pi,dtch,root15,d,choice,new
+    print(us)
+    new=nd.get()
+    print(new)
+    prid=pi.get()
+    print(prid)
+    choice=dtch.get()
+    print(choice)
+    if new != "" :
+        if choice=='Medical Condition':
+            if re.match(r'([A-Z][a-z])*+$',new):
+                cur.execute('update Prescriptions set Conditions=%s where PrescriptionID=%s and UserID=%s',(new,prid,us))
+                con.commit()
+                tkinter.messagebox.showinfo("Success", "Your Data has been Modified Successfully!")
+            else:
+                tkinter.messagebox.showerror("Error", "Invalid Medical Condition! Medical Condition must contain alphabtes only.")
+        elif choice=='Prescription':
+            if re.match(r'([A-Z][a-z])*+$',new):
+                cur.execute('update Prescriptions set Prescription=%s where PrescriptionID=%s and UserID=%s',(new,prid,us))
+                con.commit()
+                tkinter.messagebox.showinfo("Success", "Your Data has been Modified Successfully!")
+            else:
+                tkinter.messagebox.showerror("Error", "Invalid Prescription! Prescription must contain alphabets only.")
+        elif choice=='Fees Paid':
+            if re.match(r'([0-9])*+$',new):
+                cur.execute('update Prescriptions set Fees=%s where PrescriptionID=%s and UserID=%s',(new,prid,us))
+                con.commit()
+                tkinter.messagebox.showinfo("Success", "Your Data has been Modified Successfully!")
+            else:
+                tkinter.messagebox.showerror("Error", "Invalid Fees Amount! Fees Amount must contain numbers only.")
+        '''else:
+            pass'''
+    else:
+         tkinter.messagebox.showerror("Error", "New Data not Entered!")
+    
         
 def prescriptionop():
     global x1,x2, root11, u
@@ -721,19 +885,21 @@ def prescriptionop():
         print(u)
         root11=Tk()
         root11.title("Prescription")
-        root11.geometry(f"300x250+{600}+{285}")
+        root11.geometry(f"300x300+{600}+{285}")
         root11.config(background="light blue")
 
         windows.append(root11)
         
         label=Label(root11,text="Prescription",font='arial 25 bold', bg = 'light blue')
         label.pack()
-        frame=Frame(root11,height=250,width=300, bg = 'light blue')
+        frame=Frame(root11,height=300,width=300, bg = 'light blue')
         frame.pack()
-        b2=Button(root11,text="Add Prescription",font='arial 15 bold', bg='white', width=15, command=update_prescription)
-        b2.place(x=60,y=80)
-        b2=Button(root11,text="View Prescriptions",font='arial 15 bold', bg='white', width=15, command=view_prescription)
-        b2.place(x=60,y=150)
+        b2=Button(root11,text="Add Prescription",font='arial 15 bold', bg='white', width=16, command=add_prescription)
+        b2.place(x=50,y=80)
+        b2=Button(root11,text="View Prescriptions",font='arial 15 bold', bg='white', width=16, command=view_prescription)
+        b2.place(x=50,y=150)
+        b3=Button(root11,text="Modify Prescription",font='arial 15 bold', bg='white', width=16, command=modify_prspt_Form)
+        b3.place(x=50,y=220)
         root11.resizable(False,False)
         root11.mainloop()
     else:
@@ -754,8 +920,15 @@ def prescriptionform():
     frame.pack()
     l1=Label(root13,text="UserID", font='arial 10 bold', bg = 'light blue')
     l1.place(x=30,y=80)
-    x1=tkinter.Entry(root13, width=30)
-    x1.place(x=90,y=80)
+    cur.execute("select UserID from UserDetails")
+    us = cur.fetchall()
+    print(us)
+    if us:
+        usd = StringVar() 
+        x1 = ttk.Combobox(frame, width = 25, textvariable = usd, values = us, state="readonly")
+        x1.place(x=100, y=38) 
+    '''x1=tkinter.Entry(root13, width=30)
+    x1.place(x=90,y=80)'''
     b1=Button(root13,text="Submit", font='arial 10 bold', bg ='white', command=checkuidp)
     b1.place(x=130,y=140)
     root13.resizable(False,False)
@@ -778,7 +951,7 @@ def checkuidp():
 
 
 def exit():
-    global root1, root2, root3, root4, root5, root8, root9, root10, root11, root12, root13, root14
+    global root1, root2, root3, root4, root5, root8, root9, root10, root11, root12, root13, root14, root15
     if tkinter.messagebox.askokcancel("Quit", "Do you want to quit?"):
         for w in windows :
             if w and w != root:
